@@ -1,6 +1,8 @@
+import serial.tools.list_ports 
 import serial
 import time
-
+import subprocess
+from tools import encodeSpeeds
 class SerialRadio():
   """Implementa a comunicação usando simplesmente a interface serial"""
   def __init__(self):
@@ -11,12 +13,16 @@ class SerialRadio():
   def closeSerial(self):
     if self.serial is not None: self.serial.close()
 
-  def send(self, msg, waitack=True):
+  def send(self, msg, waitack=False):
     """Envia a mensagem via barramento serial em `/dev/ttyUSB0`."""
     try:
       if self.serial is None:
-        self.serial = serial.Serial('/dev/ttyUSB0', 115200)
-        self.serial.timeout = 0.100
+        porta = [port.device for port in serial.tools.list_ports.comports()][-1]
+        subprocess.Popen("echo 'unball1' | sudo -S  chmod a+rw "+porta , stdout=subprocess.PIPE, shell=True)
+        print("Acessando a porta USB", porta)
+        self.serial = serial.Serial(porta, 115200)
+        print("oi")
+        # self.serial.timeout = 0.00001
     except Exception as e:
       print(e)
       print("Falha ao abrir serial")
@@ -32,15 +38,16 @@ class SerialRadio():
     data = [0] * 6
 
     # Adiciona as velocidades ao vetor de dados
-    for i,(vl,vr) in enumerate(msg):
+    for i,(v,w) in enumerate(msg):
+      v,w = encodeSpeeds(v, w)
 
       # Coloca no vetor de dados
-      data[i] = vl
-      data[i+3] = vr
+      data[i] = v
+      data[i+3] = w
 
       # Computa o checksum
-      print('vl, vr', vl, vr)
-      checksum += vl+vr
+      if v != 0 or w != 0: print('v, w', v, w)
+      checksum += v+w
 
     # Concatena o vetor de dados à mensagem
     for v in data: message += (v).to_bytes(2,byteorder='little', signed=True)

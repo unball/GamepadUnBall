@@ -92,7 +92,7 @@ class Joystick:
                     elif event.axis == 5:
                         self.speed = np.abs((event.value + 1) / 2.0) / 3
                     elif event.axis == 3:
-                        print(event)
+                        print(event, "AAAAAAAAAAA")
                         if abs(event.value) > 0.09:
                             self.w = event.value * 1.5
                         else:

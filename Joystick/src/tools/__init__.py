@@ -9,8 +9,8 @@ wheel_reduction = 5
 #L = 0.075
 
 # O que realmente é
-r = 0.016
-L = 0.052
+r = 0.015
+L = 0.075
 
 class SpeedPair():
   """Classe que mantém velocidade angular e linear de atuação do controle"""
@@ -39,22 +39,23 @@ def speeds2motors(v: float, w: float) -> (int, int):
   # vr = int(sat(vr, 127))
   # vl = int(sat(vl, 127))
   
-  return vr, vl
+  return vl, vr
 
 def actuate(v, w):  
-  vr, vl = speeds2motors(v, w)
+  vl, vr = speeds2motors(v, w)
   
-  vr = 6*int(sat(vr * 127 / 110, 127))
-  vl = 6*int(sat(vl * 127 / 110, 127))
+  # vr = 6*int(sat(vr * 127 / 110, 127))
+  # vl = 6*int(sat(vl * 127 / 110, 127))
   
-  return vr, vl
+  return vl, vr
+
 
 def encodeSpeeds(v: float, w: float) -> (int, int):
   
   venc = int(v/2 * 32767)
   wenc = int(w/64 * 32767)
 
-  return (1 if venc >= 0 else -1) * (abs(venc) % 32767), (1 if wenc >= 0 else -1) * (abs(wenc) % 32767)
+  return int((1 if venc >= 0 else -1) * (abs(venc) % 32767)), int((1 if wenc >= 0 else -1) * (abs(wenc) % 32767))
 
 def motors2linvel(vl: float, vr: float) -> float:
   # Computa a velocidade angular de rotação de cada roda

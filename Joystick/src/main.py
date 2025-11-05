@@ -43,21 +43,23 @@ t0 = 0
 visionData = None
 
 while True:
+    t0 = time.time()
     refAngle = js.angle
     speed = js.speed
-    print(speed)
+    # if speed != 0: print(speed)
     w = js.w
     turbo = js.turbo
     spin = js.spin
 
     output = []
     
-    # output.append((0,0))
-    # output.append((0,0))
-    output.append(actuate(speed*3, w))
-    print(output)
+    output.append((speed*3, w))
+    output.append((speed*3, w))
+    output.append((speed*3, w))
+    # if output != [(0,0),(0,0),(0,0)]: print(output)
     
     serial.send(output)
+    print(1/(time.time()-t0), flush=True, end="\r")
     # serial.send([(0,0),(0,0),(0,0)])
 
 
